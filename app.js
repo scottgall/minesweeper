@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const grid = document.querySelector('.grid')
+  const flagsLeft = document.querySelector('#flags-left')
+  const result = document.querySelector('#result')
   let width = 10
   let bombAmount = 20
   let flags = 0
@@ -8,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //create Board
   function createBoard() {
+    flagsLeft.innerHTML = bombAmount
+
     //get shuffled game array with random bombs
     const bombsArray = Array(bombAmount).fill('bomb')
     const emptyArray = Array(width*width - bombAmount).fill('valid') 
@@ -32,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         addFlag(square)
       }
     }
-
     
     //add numbers
     for (let i = 0; i < squares.length; i++) {
@@ -63,11 +66,13 @@ document.addEventListener('DOMContentLoaded', () => {
         square.classList.add('flag')
         square.innerHTML = '🚩'
         flags++
+        flagsLeft.innerHTML = bombAmount -flags
         checkForWin()
       } else {
         square.classList.remove('flag')
         square.innerHTML = ''
         flags--
+        flagsLeft.innerHTML = bombAmount -flags
       }
     }
   }
@@ -83,6 +88,10 @@ document.addEventListener('DOMContentLoaded', () => {
       let total = square.getAttribute('data')
       if (total !=0) {
         square.classList.add('checked')
+        if (total == 1) square.classList.add('one')
+        if (total == 2) square.classList.add('two')
+        if (total == 3) square.classList.add('three')
+        if (total == 4) square.classList.add('four')
         square.innerHTML = total
         return
       }
@@ -90,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     square.classList.add('checked')
   }
+
 
   //check neighboring squares once square is clicked
   function checkSquare(square, currentId) {
@@ -142,13 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //game over
   function gameOver(square) {
-    console.log('BOOM! Game Over!')
+    result.innerHTML = 'BOOM! Game Over!'
     isGameOver = true
 
     //show ALL the boms
     squares.forEach(square => {
       if (square.classList.contains('bomb')) {
         square.innerHTML = '💣'
+        square.classList.remove('bomb')
+        square.classList.add('checked')
       }
     })
   }
@@ -162,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         matches++
       }
       if (matches === bombAmount) {
-        console.log('YOU WON!')
+        result.innerHTML = 'YOU WIN!'
         isGameOver = true
       }
     }
